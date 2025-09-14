@@ -472,3 +472,19 @@ $('#btnSetWake').addEventListener('click', ()=>{
 </script>
 </body>
 </html>
+import { useState } from "react";
+
+export default function AIPILiteConnector() { const [status, setStatus] = useState("Idle"); const [file, setFile] = useState(null);
+
+const connectToDevice = async () => { try { setStatus("Connecting to device..."); const response = await fetch("/api/connect"); // backend endpoint for connection if (!response.ok) throw new Error("Connection failed"); setStatus("Connected to AI PI-Lite!"); } catch (err) { setStatus("Connection failed: " + err.message); } };
+
+const handleFileUpload = async () => { if (!file) return; setStatus("Uploading file..."); try { const formData = new FormData(); formData.append("file", file); const response = await fetch("/api/upload", { method: "POST", body: formData, }); if (!response.ok) throw new Error("Upload failed"); setStatus("File uploaded successfully!"); } catch (err) { setStatus("Upload failed: " + err.message); } };
+
+return ( <div className="p-4 flex flex-col gap-4 max-w-md mx-auto"> <h1 className="text-xl font-bold">AI PI-Lite Controller</h1> <button
+onClick={connectToDevice}
+className="bg-blue-500 text-white p-2 rounded-2xl shadow"
+> Connect </button> <input type="file" onChange={(e) => setFile(e.target.files[0])} className="p-2 border rounded" /> <button
+onClick={handleFileUpload}
+className="bg-green-500 text-white p-2 rounded-2xl shadow"
+> Upload File </button> <p className="text-gray-700">Status: {status}</p> </div> ); }
+
